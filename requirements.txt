@@ -1,0 +1,14 @@
+numpy==1.21.6
+pytest
+pika==1.3.2
+redis==5.2.1
+pydantic==2.10.4
+pyinstaller
+yt_dlp
+SQLAlchemy 
+psycopg2-binary
+pandas
+scikit-learn
+essentia-tensorflow
+fastapi 
+uvicorn
