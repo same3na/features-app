@@ -13,8 +13,9 @@ class YoutubeSongDownloader(DownloadSongApi):
     ydl_opts = {
       'format': 'bestaudio/best',
       'postprocessors': [{
-          'key': 'FFmpegExtractAudio',
-          'preferredcodec': self.getAudioCodec(),
+        'cookiefile': 'src/cookies.txt', 
+        'key': 'FFmpegExtractAudio',
+        'preferredcodec': self.getAudioCodec(),
       }],
       # 'outtmpl': self.getDownloadPath(song, '%(ext)s'),
       'outtmpl': f'{ self.getDownloadPath() }/{id}.%(ext)s',

@@ -4,7 +4,7 @@ import json
 import logging
 
 from modules.common.application.interfaces.pub_sub_interface import PubSubInterface
-from modules.songs.application.commands.analyze_song_cmd import AnalyzeSongCommand, AnalyzeSongCommandHandler
+from modules.songs.application.commands.download_song_cmd import AnalyzeSongCommand, AnalyzeSongCommandHandler
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 

@@ -1,5 +1,8 @@
 FROM nvidia/cuda:11.2.2-cudnn8-runtime-ubuntu20.04
 
+# for now use CPU
+ENV CUDA_VISIBLE_DEVICES=-1
+
 # Set non-interactive mode to prevent tzdata prompts
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -30,6 +33,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application files
 COPY . .
+
+# adding the cookies to be used later
+RUN echo "$YOUTUBE_COOKIES" > /src/cookies.txt
 
 # # Preload the model during the Docker build stage
 # RUN python3 -c "from essentia.standard import TensorflowPredictEffnetDiscogs, TensorflowPredict2D; \
