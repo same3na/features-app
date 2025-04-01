@@ -35,7 +35,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # adding the cookies to be used later
-RUN echo "$YOUTUBE_COOKIES" > /src/cookies.txt
+RUN echo "$YOUTUBE_COOKIES" > /app/src/cookies.txt
 
 # # Preload the model during the Docker build stage
 # RUN python3 -c "from essentia.standard import TensorflowPredictEffnetDiscogs, TensorflowPredict2D; \
