@@ -12,23 +12,20 @@ from modules.songs.domain.song import Song
 from modules.songs.domain.song_repo import SongRepo
 
 @dataclass
-class AnalyzeSongCommand():
+class DownloadSongCommand():
   id: str
   title: str
   album: str
   artist: str
 
 @dataclass
-class AnalyzeSongCommandHandler():
+class DownloadSongCommandHandler():
   download_api:DownloadSongApi
-  analyze_song_api:AnalyzeSongApi
-  song_repo:SongRepo
   external_song_url:ExternalSongUrl
   stream:EventStreamingInterface
-  pub_sub:PubSubInterface
 
 
-  def handle(self, cmd: AnalyzeSongCommand):
+  def handle(self, cmd: DownloadSongCommand):
     try:
       # get song url
       url = self.external_song_url.get_url(title=cmd.title, artist=cmd.artist, album=cmd.album)
@@ -44,18 +41,7 @@ class AnalyzeSongCommandHandler():
 
       if not os.path.exists(song_downloaded_path):
         raise Exception(f"Path does not exist: {song_downloaded_path}")
-      
-      # # analyze the song
-      # features = self.analyze_song_api.analyze(song_downloaded_path)
-
-      # save to db
-      # song = Song(id=uuid.UUID(cmd.id), 
-      #             features=features)
-      
-      song = Song(id=uuid.UUID(cmd.id))
-
-      self.song_repo.save_analyze_features(song)
-
+            
       # notify that the song has been analyzed successfully
       # transform the body to bytes
       body = {
@@ -64,8 +50,7 @@ class AnalyzeSongCommandHandler():
       }
       logging.debug(f"Message sent to the stream {body}")
       self.stream.add(stream="song-external-url", data=body)
-
-      self.pub_sub.publish("ExtractSongFeatures", {"song_id": cmd.id, "song_url": url})
+      self.stream.add(stream="get-song-features", data=body)
 
     except Exception as e:
       # notify that the song has been analyzed successfully
@@ -77,4 +62,3 @@ class AnalyzeSongCommandHandler():
       }
       logging.debug(f"Message sent to the stream {body}")
       self.stream.add(stream="analyzed-songs", data=body)
-      print(e)

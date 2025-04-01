@@ -1,10 +1,11 @@
 
 import argparse
 import json
+import os
 import uuid
 import logging
 
-
+from logging_config import setup_logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from modules.common.infrastructure.redis_pub_sub import RedisPubSub
@@ -14,7 +15,7 @@ from modules.songs.infrastructure.essentia_features.essentia_extract_features im
 from modules.songs.infrastructure.sqlalchemy.song_repo import SQLAlchemySongRepository
 from modules.songs.infrastructure.youtube_song_downloader import YoutubeSongDownloader
 
-DATABASE_URL = "postgresql://root:test@localhost:5434/test"
+DATABASE_URL = f"postgresql://{os.getenv('DBUSER')}:{os.getenv('DBPASS')}@{os.getenv('DBHOST')}:{os.getenv('DBPORT')}/{os.getenv('DBNAME')}"
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 session = SessionLocal()
@@ -24,26 +25,28 @@ feature_api = EssentiaExtractFeatures()
 
 youtube_downloader = YoutubeSongDownloader()
 
-redis_pub_sub = RedisPubSub(redis_host="localhost", redis_port=6379, redis_db=0)
-redis_pub_sub.subscribe("ExtractSongFeatures")
-event_stream = RedisStreaming(redis_host="localhost", redis_port=6379, redis_db=0)
+event_stream = RedisStreaming(redis_host=os.getenv('REDIS_HOST'), redis_port=os.getenv('REDIS_PORT'), redis_db=os.getenv('REDIS_DB'))
+
+stream_name = "get-song-features"
+consumer_group_name = "get-song-features-grp"
+consumer = "get-song-features-grp-consumer-filtering-app"
 
 def main():
+  setup_logging()
+
   cmd = ExtractSongFeaturesCommandHandler(extract_song_features=feature_api, song_repo=song_repo, download_api=youtube_downloader, stream=event_stream)
 
   try:
-    for message in redis_pub_sub.listen("ExtractSongFeatures"):
-      if message['type'] == 'message':
-        # data = message['data']
-        print(f"Received message: {message['data'].decode('utf-8')}")
-        data = message['data'].decode('utf-8')
+    while True:
+      msgs = event_stream.consume(stream_name=stream_name, group_name=consumer_group_name, consumer_name=consumer)
+      for event_id, data in msgs:
+        try:
+          print(f"Received message: {data}")
+          cmd.handle(ExtractSongFeaturesCommand(id=uuid.UUID(data["id"]), url=data["url"]))
+          event_stream.ack(stream_name, consumer_group_name, event_id)
 
-        data = json.loads(data)
-        data = data['Data']
-        logging.debug(f"song id {data['song_id']}")
-        
-        cmd.handle(ExtractSongFeaturesCommand(id=uuid.UUID(data["song_id"]), url=data["song_url"]))
-
+        except Exception as e:
+          print(f"Error occurred: {e}")  # Print the error message    
   except KeyboardInterrupt:
     print("Subscriber stopped.")
 

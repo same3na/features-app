@@ -149,27 +149,30 @@ class SQLAlchemySongRepository(SongRepo):
 
 
   def save_predicition_features(self, song:Song):
+    
+    """Save the prediction features."""
     db_model = SongORM.from_domain(song=song)
 
-    """Save the prediction features."""
-    song = self.session.get(SongORM, db_model.song_id)
+    existing_song = self.session.get(SongORM, db_model.song_id)  # Check if it exists
 
-    if song:
+    if existing_song:
       # if db_model.features is not None:
       #   song.features = db_model.features
       if db_model.genre is not None:
-        song.genre = db_model.genre
+        existing_song.genre = db_model.genre
       if db_model.aggressive is not None:
-        song.aggressive = db_model.aggressive
+        existing_song.aggressive = db_model.aggressive
       if db_model.engagement is not None:
-        song.engagement = db_model.engagement
+        existing_song.engagement = db_model.engagement
       if db_model.happy is not None:
-        song.happy = db_model.happy
+        existing_song.happy = db_model.happy
       if db_model.relaxed is not None:
-        song.relaxed = db_model.relaxed
+        existing_song.relaxed = db_model.relaxed
       if db_model.sad is not None:
-        song.sad = db_model.sad
+        existing_song.sad = db_model.sad
       if db_model.mood is not None:
-        song.mood = db_model.mood
+        existing_song.mood = db_model.mood
+    else:
+      self.session.add(db_model)  # If song is new or modified, this ensures it is saved
 
-      self.session.commit()
+    self.session.commit()
