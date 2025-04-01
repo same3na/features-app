@@ -12,8 +12,8 @@ class YoutubeSongDownloader(DownloadSongApi):
   def download_sample(self, id: str, url: str):
     ydl_opts = {
       'format': 'bestaudio/best',
+      'cookiefile': 'src/cookies.txt', 
       'postprocessors': [{
-        'cookiefile': 'src/cookies.txt', 
         'key': 'FFmpegExtractAudio',
         'preferredcodec': self.getAudioCodec(),
       }],
