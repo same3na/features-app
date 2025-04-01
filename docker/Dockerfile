@@ -34,9 +34,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application files
 COPY . .
 
-# adding the cookies to be used later
-RUN echo "$YOUTUBE_COOKIES" > /app/src/cookies.txt
-
 # # Preload the model during the Docker build stage
 # RUN python3 -c "from essentia.standard import TensorflowPredictEffnetDiscogs, TensorflowPredict2D; \
 #     TensorflowPredictEffnetDiscogs(graphFilename='/app/src/modules/songs/infrastructure/essentia_features/models/discogs-effnet-bs64-1.pb', output='PartitionedCall:1'); \
@@ -50,6 +47,12 @@ RUN echo "$YOUTUBE_COOKIES" > /app/src/cookies.txt
 #     print('✅ Model preloaded successfully in Docker!')"
 
 COPY docker/supervisor/supervisor.conf /etc/supervisor/conf.d/supervisord.conf
+
+COPY docker/entrypoint.sh /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT [ "/entrypoint.sh" ]
 
 # Start Supervisor
 CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
