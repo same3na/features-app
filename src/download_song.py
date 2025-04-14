@@ -33,6 +33,7 @@ def main(processor):
           donwload_song_cmd.handle(DownloadSongCommand(id=data["song_id"], title=data["song_name"], artist=data["artist_name"], album=data["album_name"]))
           event_stream.ack(stream_name, consumer_group_name, id)
         except Exception as e:
+          event_stream.ack(stream_name, consumer_group_name, id)
           print(f"Error processing message {id}: {e}")
   except KeyboardInterrupt:
     print("Subscriber stopped.")

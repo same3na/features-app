@@ -46,6 +46,7 @@ def main():
           event_stream.ack(stream_name, consumer_group_name, event_id)
 
         except Exception as e:
+          event_stream.ack(stream_name, consumer_group_name, event_id)
           print(f"Error occurred: {e}")  # Print the error message    
   except KeyboardInterrupt:
     print("Subscriber stopped.")
