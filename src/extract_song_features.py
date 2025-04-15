@@ -31,14 +31,14 @@ stream_name = "get-song-features"
 consumer_group_name = "get-song-features-grp"
 consumer = "get-song-features-grp-consumer-filtering-app"
 
-def main():
+def main(processor):
   setup_logging()
 
   cmd = ExtractSongFeaturesCommandHandler(extract_song_features=feature_api, song_repo=song_repo, download_api=youtube_downloader, stream=event_stream)
 
   try:
     while True:
-      msgs = event_stream.consume(stream_name=stream_name, group_name=consumer_group_name, consumer_name=consumer)
+      msgs = event_stream.consume(stream_name=stream_name, group_name=consumer_group_name, consumer_name=f"{consumer}-{processor}")
       for event_id, data in msgs:
         try:
           print(f"Received message: {data}")
@@ -54,10 +54,9 @@ def main():
 
 if __name__ == "__main__":
   # parser = argparse.ArgumentParser(description="Process some inputs.")
-  # parser.add_argument("--id", type=str, help="id", required=True)
-  # parser.add_argument("--path", type=str, help="path", required=True)
+  parser = argparse.ArgumentParser(description="Process some inputs.")
+  parser.add_argument("--process", type=int, help="process", required=True)
+  
+  args = parser.parse_args()
 
-  # args = parser.parse_args()
-  # main(args.path, args.id)
-
-  main()
+  main(args.process)
