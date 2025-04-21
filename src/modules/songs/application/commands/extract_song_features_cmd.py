@@ -69,7 +69,7 @@ class ExtractSongFeaturesCommandHandler():
 
 
       # delete the sample file
-      os.remove(song_downloaded_path)
+      # os.remove(song_downloaded_path)
 
     except Exception as e:
       # notify that the song has been analyzed successfully
