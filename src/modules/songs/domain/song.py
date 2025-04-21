@@ -27,3 +27,7 @@ class Song():
   engagement: int | None = None
   
   
+@dataclass()
+class SongData():
+  id: uuid.UUID
+  data: AnalyzeSongFeatures | None = None

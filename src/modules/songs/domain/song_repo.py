@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 import uuid
 
-from modules.songs.domain.song import Song
+from modules.songs.domain.song import Song, SongData
 
 @dataclass
 class SongsFilter():
@@ -20,6 +20,10 @@ class SongRepo(ABC):
   @abstractmethod
   def save_predicition_features(self, song:Song):
     """Save the prediction features."""
+
+  @abstractmethod
+  def save_song_data(self, songData:SongData):
+    """Save the song analyzed data"""
 
   @abstractmethod
   def get_songs_by_ids(self, ids:list[str]) -> list[Song]:

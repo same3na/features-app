@@ -78,6 +78,5 @@ class ExtractSongFeaturesCommandHandler():
         "id": str(cmd.id),
         "success": "false",
       }
-      logging.debug(f"Message sent to the stream {body}")
+      logging.error(f"Error ExtractSongFeaturesCommandHandler {e}")
       self.stream.add(stream="analyzed-songs", data=body)
-      print(e)
