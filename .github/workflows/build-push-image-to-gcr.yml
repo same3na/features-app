@@ -47,7 +47,7 @@ jobs:
         with:
           context: .
           push: true
-          file: ./docker/Dockerfile
+          file: ./docker/Dockerfile.cpu
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       
