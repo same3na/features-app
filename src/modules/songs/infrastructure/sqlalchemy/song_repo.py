@@ -186,7 +186,7 @@ class SQLAlchemySongRepository(SongRepo):
 
     if existing_song:
       if db_model.data is not None:
-        existing_song.data = db_model.genre
+        existing_song.data = db_model.data
     else:
       self.session.add(db_model)  # If song is new or modified, this ensures it is saved
 
