@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from modules.songs.application.services.song_service import SongService
 from modules.songs.application.queries.filter_songs_qry import ClassificationFilters, FilterSongsCmd, FilterSongsHandler, SongsFilter
 from modules.songs.application.queries.get_song_features_qry import GetSongFeaturesCommand, GetSongFeaturesQueryHandler
 from modules.songs.infrastructure.essentia_features.essentia_extract_features import EssentiaExtractFeatures
@@ -17,7 +18,6 @@ app = FastAPI()
 origins = [
     "http://localhost:5173",  # React local dev server
     "http://localhost:8000",  # React local dev server
-
 ]
 
 app.add_middleware(
@@ -66,6 +66,7 @@ class FilterPostRequest(BaseModel):
     filters: list[ClassificationRequest] = field(default_factory=list)
     playlist_max_nb:int = 50
 
+
 @app.post("/filter-songs-by-criterias")
 def filter_item(item: FilterPostRequest):
   try:
@@ -75,3 +76,16 @@ def filter_item(item: FilterPostRequest):
   except Exception as e:
     print(str(e))
     raise HTTPException(status_code=400, detail=str(e))
+
+class ClusterSongsRequest(BaseModel):
+    song_ids: list = field(default_factory=list)
+
+@app.post("/cluster-songs")
+def cluster_songs(item: ClusterSongsRequest):
+    try:
+        songsService = SongService(song_repo)
+        clusters = songsService.feature_clustering(ids=item.song_ids)
+        return {"clusters": clusters}
+    except Exception as e:
+        print(str(e))
+        raise HTTPException(status_code=400, detail=str(e))
