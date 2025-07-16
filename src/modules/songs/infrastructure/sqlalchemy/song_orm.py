@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import declarative_base
 import uuid
 
-from modules.songs.domain.song import Song
+from modules.songs.domain.song import Song, SongData
 
 Base = declarative_base()
 
@@ -48,4 +48,23 @@ class SongORM(Base):
       happy=song.happy,
       relaxed=song.relaxed,
       sad=song.sad,
+    )
+
+class SongDataORM(Base):
+  __tablename__ = "song_data"
+
+  song_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4) # Primary key
+  data = Column(JSONB, nullable=False)
+
+  def to_domain(self) -> SongData:
+    return SongData(
+      id=self.song_id,
+      data=self.data
+    )
+
+  @staticmethod
+  def from_domain(song: SongData) -> "SongDataORM":
+    return SongDataORM(
+      song_id=song.id,
+      data=song.data.model_dump() if song.data is not None else None,
     )

@@ -1,4 +1,5 @@
 
+import logging
 import os
 import json
 import argparse
@@ -25,15 +26,15 @@ def main(processor):
 
   try:
     while True:
-      msgs = event_stream.consume(stream_name, consumer_group_name, consumer)
-      print(msgs)
+      msgs = event_stream.consume(stream_name, consumer_group_name, f"{consumer}-{processor}")
       for id, message in msgs:
         data = json.loads(message["data"])
         try:
           donwload_song_cmd.handle(DownloadSongCommand(id=data["song_id"], title=data["song_name"], artist=data["artist_name"], album=data["album_name"]))
-          event_stream.ack(stream_name, f"{consumer_group_name}-{processor}", id)
+          event_stream.ack(stream_name, consumer_group_name, id)
         except Exception as e:
-          print(f"Error processing message {id}: {e}")
+          event_stream.ack(stream_name, consumer_group_name, id)
+          logging.error(f"Error occurred downloading song: {e}")  # Print the error message    
   except KeyboardInterrupt:
     print("Subscriber stopped.")
 

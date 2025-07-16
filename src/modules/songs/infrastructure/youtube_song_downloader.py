@@ -12,9 +12,10 @@ class YoutubeSongDownloader(DownloadSongApi):
   def download_sample(self, id: str, url: str):
     ydl_opts = {
       'format': 'bestaudio/best',
+      'cookiefile': 'src/cookies.txt', 
       'postprocessors': [{
-          'key': 'FFmpegExtractAudio',
-          'preferredcodec': self.getAudioCodec(),
+        'key': 'FFmpegExtractAudio',
+        'preferredcodec': self.getAudioCodec(),
       }],
       # 'outtmpl': self.getDownloadPath(song, '%(ext)s'),
       'outtmpl': f'{ self.getDownloadPath() }/{id}.%(ext)s',

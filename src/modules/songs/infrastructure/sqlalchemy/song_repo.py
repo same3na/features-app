@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from modules.songs.infrastructure.sqlalchemy.song_orm import SongORM  # ORM model
-from modules.songs.domain.song import Song
+from modules.songs.infrastructure.sqlalchemy.song_orm import SongDataORM, SongORM  # ORM model
+from modules.songs.domain.song import Song, SongData
 from modules.songs.domain.song_repo import SongRepo, SongsFilter  # Domain model
 from sqlalchemy.exc import IntegrityError
 
@@ -176,3 +176,19 @@ class SQLAlchemySongRepository(SongRepo):
       self.session.add(db_model)  # If song is new or modified, this ensures it is saved
 
     self.session.commit()
+
+  def save_song_data(self, songData:SongData):
+    """Save the song analyzed data"""
+
+    db_model = SongDataORM.from_domain(song=songData)
+
+    existing_song = self.session.get(SongDataORM, db_model.song_id)  # Check if it exists
+
+    if existing_song:
+      if db_model.data is not None:
+        existing_song.data = db_model.data
+    else:
+      self.session.add(db_model)  # If song is new or modified, this ensures it is saved
+
+    self.session.commit()
+

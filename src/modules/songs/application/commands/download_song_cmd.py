@@ -51,6 +51,7 @@ class DownloadSongCommandHandler():
       logging.debug(f"Message sent to the stream {body}")
       self.stream.add(stream="song-external-url", data=body)
       self.stream.add(stream="get-song-features", data=body)
+      self.stream.add(stream="get-song-data", data=body)
 
     except Exception as e:
       # notify that the song has been analyzed successfully
@@ -60,5 +61,5 @@ class DownloadSongCommandHandler():
         "success": "false",
         "url": ""
       }
-      logging.debug(f"Message sent to the stream {body}")
+      logging.error(f"Error DownloadSongCommandHandler {e}")
       self.stream.add(stream="analyzed-songs", data=body)

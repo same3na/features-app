@@ -69,7 +69,7 @@ class ExtractSongFeaturesCommandHandler():
 
 
       # delete the sample file
-      os.remove(song_downloaded_path)
+      # os.remove(song_downloaded_path)
 
     except Exception as e:
       # notify that the song has been analyzed successfully
@@ -78,6 +78,5 @@ class ExtractSongFeaturesCommandHandler():
         "id": str(cmd.id),
         "success": "false",
       }
-      logging.debug(f"Message sent to the stream {body}")
+      logging.error(f"Error ExtractSongFeaturesCommandHandler {e}")
       self.stream.add(stream="analyzed-songs", data=body)
-      print(e)
