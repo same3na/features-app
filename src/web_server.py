@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import os
 
 from modules.songs.application.services.song_service import SongService
 from modules.songs.application.queries.filter_songs_qry import ClassificationFilters, FilterSongsCmd, FilterSongsHandler, SongsFilter
@@ -36,7 +37,7 @@ async def global_exception_handler(request: Request, exc: Exception):
         headers={"Access-Control-Allow-Origin": "*"},  # Ensure CORS headers are applied
     )
 
-DATABASE_URL = "postgresql://root:test@localhost:5434/test"
+DATABASE_URL = f"postgresql://{os.getenv('DBUSER')}:{os.getenv('DBPASS')}@{os.getenv('DBHOST')}:{os.getenv('DBPORT')}/{os.getenv('DBNAME')}"
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 session = SessionLocal()
