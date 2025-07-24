@@ -58,11 +58,12 @@ class FeatureClusteringCmdHandler:
 
 
     # Normalize genre values per song
-    genre_df_normalized = genre_df.div(genre_df.sum(axis=1), axis=0)
+    # genre_df_normalized = genre_df.div(genre_df.sum(axis=1), axis=0)
+    genre_df_normalized = genre_df.div(100)
 
     # Normalize mood values per song
-    mood_df_normalized = mood_df.div(mood_df.sum(axis=1), axis=0)
-
+    # mood_df_normalized = mood_df.div(mood_df.sum(axis=1), axis=0)
+    mood_df_normalized = mood_df.div(100)
 
     feature_cols = ['aggressive', 'happy', 'sad', 'relaxed', 'engagement']
     scaler = StandardScaler()
