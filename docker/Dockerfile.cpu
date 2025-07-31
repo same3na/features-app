@@ -52,8 +52,7 @@ RUN chmod +x /entrypoint.sh
 RUN chmod +x /usr/local/bin/cleanup-old-files.sh
 
 COPY docker/cron/cleanup.cron /etc/cron.d/cleanup
-RUN chmod 0644 /etc/cron.d/cleanup && \
-    crontab /etc/cron.d/cleanup
+RUN chmod 0644 /etc/cron.d/cleanup
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
